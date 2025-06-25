@@ -7,23 +7,44 @@
 </head>
 <body>
     <h2>Chat Room</h2>
-    <ul id="messages"></ul>
-    <input id="message" autocomplete="off" placeholder="Type a message..." />
-    <button onclick="sendMessage()">Send</button>
+
+    <div id="username-container">
+        <input id="username" placeholder="Enter your name" />
+        <button onclick="startChat()">Join Chat</button>
+    </div>
+
+    <div id="chat-container" style="display: none;">
+        <ul id="messages"></ul>
+        <input id="message" autocomplete="off" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
 
     <script>
-        const socket = io();
+        let socket;
+        let username = "";
 
-        socket.on('message', function(msg) {
-            const li = document.createElement("li");
-            li.textContent = msg;
-            document.getElementById("messages").appendChild(li);
-        });
+        function startChat() {
+            username = document.getElementById("username").value.trim();
+            if (!username) return alert("Enter a name!");
+
+            document.getElementById("username-container").style.display = "none";
+            document.getElementById("chat-container").style.display = "block";
+
+            socket = io();
+
+            socket.on('message', function(data) {
+                const li = document.createElement("li");
+                li.textContent = data;
+                document.getElementById("messages").appendChild(li);
+            });
+        }
 
         function sendMessage() {
             const input = document.getElementById("message");
-            if (input.value.trim() !== "") {
-                socket.send(input.value);
+            const msg = input.value.trim();
+            if (msg) {
+                const fullMsg = username + ": " + msg;
+                socket.send(fullMsg);
                 input.value = '';
             }
         }
