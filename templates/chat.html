@@ -2,12 +2,13 @@
 <html>
 <head>
     <title>Chat Room</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body>
     <h2>Chat Room</h2>
     <ul id="messages"></ul>
-    <input id="message" autocomplete="off" />
+    <input id="message" autocomplete="off" placeholder="Type a message..." />
     <button onclick="sendMessage()">Send</button>
 
     <script>
@@ -21,8 +22,10 @@
 
         function sendMessage() {
             const input = document.getElementById("message");
-            socket.send(input.value);
-            input.value = '';
+            if (input.value.trim() !== "") {
+                socket.send(input.value);
+                input.value = '';
+            }
         }
     </script>
 </body>
